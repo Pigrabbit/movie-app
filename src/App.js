@@ -1,59 +1,63 @@
 import React from "react";
-import PropTypes from "prop-types";
+import Movie from "./Movie";
+import "./App.css"
 
-const foodILike = [
-  {
-    id: 1,
-    name: "Bulgogi",
-    image:
-      "https://recipe1.ezmember.co.kr/cache/recipe/2017/01/28/1af73efa160ca79311629ecdf20ad7071.jpg",
-    rating: 4,
-  },
-  {
-    id: 2,
-    name: "Galbi",
-    image:
-      "https://cdn.wadiz.kr/ft/images/green001/2019/0115/20190115210937576_35.jpg/wadiz/format/jpg/quality/80/optimize",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Samgyeopsal",
-    image:
-      "https://pds.joins.com/news/component/htmlphoto_mmdata/201702/27/117f5b49-1d09-4550-8ab7-87c0d82614de.jpg",
-    rating: 2,
-  },
-  {
-    id: 4,
-    name: "Chicken",
-    image:
-      "https://image.chosun.com/sitedata/image/201411/18/2014111803828_0.jpg",
-    rating: 5,
-  },
-];
+class App extends React.Component {
+  // doesn't have return
+  constructor(props) {
+    super(props);
+    console.log("construct");
+  }
+  // put data which will be changed in state
+  state = {
+    isLoading: true,
+    movies: [],
+  };
 
-function renderFood(dish) {
-  return <Food key={dish.id} name={dish.name} img={dish.image} rating={dish.rating} />;
-}
+  getMovies = async () => {
+    const response = await fetch(
+      "https://yts.mx/api/v2/list_movies.json?sort_by=rating"
+    );
+    const data = await response.json();
+    const movies = data.data.movies;
+    this.setState({ movies, isLoading: false });
+  };
 
-function Food({ name, img, rating }) {
-  return (
-    <div>
-      <h3>I like {name}</h3>
-      <h3>{rating}/5</h3>
-      <img src={img} width="300" alt={name} />
-    </div>
-  );
-}
+  componentDidMount() {
+    console.log("component rendered!");
+    this.getMovies();
+    console.log("movie retrieved!");
+  }
 
-Food.propTypes = {
-  name: PropTypes.string.isRequired,
-  img: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
-}
-
-function App() {
-  return <div>{foodILike.map(renderFood)}</div>;
+  render() {
+    console.log("rendering...");
+    const { isLoading, movies } = this.state;
+    return (
+      <section className="container">
+        {isLoading ? (
+          <div className="loader">
+            <span className="loader__text">Loading...</span>
+          </div>
+        ) : (
+          <div className="movie">
+            {movies.map((movie) => {
+              return (
+                <Movie
+                  key={movie.id}
+                  id={movie.id}
+                  year={movie.year}
+                  title={movie.title}
+                  summary={movie.summary}
+                  poster={movie.medium_cover_image}
+                  genres={movie.genres}
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
+    );
+  }
 }
 
 export default App;
