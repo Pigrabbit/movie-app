@@ -3,12 +3,11 @@ import Movie from "./Movie";
 import "./App.css"
 
 class App extends React.Component {
-  // doesn't have return
   constructor(props) {
     super(props);
     console.log("construct");
   }
-  // put data which will be changed in state
+  
   state = {
     isLoading: true,
     movies: [],
@@ -24,13 +23,11 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    console.log("component rendered!");
     this.getMovies();
-    console.log("movie retrieved!");
   }
 
   render() {
-    console.log("rendering...");
+    // console.log("rendering...");
     const { isLoading, movies } = this.state;
     return (
       <section className="container">
@@ -39,7 +36,7 @@ class App extends React.Component {
             <span className="loader__text">Loading...</span>
           </div>
         ) : (
-          <div className="movie">
+          <div className="movies">
             {movies.map((movie) => {
               return (
                 <Movie
@@ -49,7 +46,7 @@ class App extends React.Component {
                   title={movie.title}
                   summary={movie.summary}
                   poster={movie.medium_cover_image}
-                  genres={movie.genres}
+                  genres={movie.genres ? movie.genres : [""]}
                 />
               );
             })}
